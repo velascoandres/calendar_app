@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, momentLocalizer, stringOrDate, View } from 'react-big-calendar'
+import { Calendar, momentLocalizer, SlotInfo, stringOrDate, View } from 'react-big-calendar'
 import moment from 'moment'
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'moment/locale/es';
@@ -9,10 +9,11 @@ import { CalendarEvent, IEvent } from './CalendarEvent';
 import { CalendarModal } from './CalendarModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { uiOpenModal } from '../../actions/ui';
-import { setActiveEvent } from '../../actions/calendar';
+import { clearActiveEvent, setActiveEvent } from '../../actions/calendar';
 import { AddNewFab } from '../ui/AddNewFab';
 import { RootState } from '../../store/store';
 import { CalendarState } from '../../reducers/calendarReducer';
+import { DeleteEventFab } from '../ui/DeleteEventFab';
 
 
 moment.locale('es');
@@ -26,7 +27,7 @@ export const CalendarScreen: React.FC = () => {
 
     const [lastView, setLastView] = useState<View>(initialState);
     const dispatch = useDispatch();
-    const { events } = useSelector<RootState, CalendarState>(state => state.calendar);
+    const { events, activeEvent } = useSelector<RootState, CalendarState>(state => state.calendar);
 
     const onDoubleClick = (e: IEvent) => {
         dispatch(
@@ -58,6 +59,13 @@ export const CalendarScreen: React.FC = () => {
         };
     };
 
+    const handleSelectSlot = (event: SlotInfo) => {
+        // TODO: Crear desde la fecha del slot
+        console.log(event);
+        dispatch(clearActiveEvent());
+    };
+
+
     return (
         <div className="calendar-screen">
             <Navbar />
@@ -73,10 +81,19 @@ export const CalendarScreen: React.FC = () => {
                 onDoubleClickEvent={onDoubleClick}
                 onView={onViewChange}
                 view={lastView}
+                selectable={true}
+                onSelectSlot={handleSelectSlot}
                 onSelectEvent={onSelectEvent}
             />
 
+
             <AddNewFab />
+
+            {
+                (activeEvent) && <DeleteEventFab />
+            }
+
+
 
             <CalendarModal />
 

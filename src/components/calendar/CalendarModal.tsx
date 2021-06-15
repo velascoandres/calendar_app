@@ -47,7 +47,7 @@ const now = moment().minutes(0).seconds(0).add(1, 'hours'); // 3:00:50
 const after = now.clone().add(1, 'hours'); // 3:00:50
 
 const initialFormValues: EventForm = {
-    title: 'Evento',
+    title: '',
     notes: '',
     start: now.toDate(),
     end: after.toDate(),
@@ -76,6 +76,8 @@ export const CalendarModal: React.FC = () => {
     useEffect(() => {
         if (activeEvent) {
             setFormValues(activeEvent);
+        } else {
+            setFormValues(initialFormValues);
         }
     },
         [activeEvent, setFormValues]

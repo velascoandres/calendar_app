@@ -26,6 +26,10 @@ export interface IUpdateEventAction extends ICalendarAction {
     }
 }
 
+export interface IDeleteEventAction extends ICalendarAction {
+    type: CalendarTypes.eventDelete;
+}
+
 export interface ISetActiveEventAction extends ICalendarAction {
     type: CalendarTypes.eventSetActive;
     payload: {
@@ -87,7 +91,7 @@ export const calendarReducer: Reducer<CalendarState, ICalendarAction> = (state =
 
         case CalendarTypes.eventUpdate:
 
-            const { event:updatedEvent } = (action as IUpdateEventAction).payload;
+            const { event: updatedEvent } = (action as IUpdateEventAction).payload;
 
             return {
                 ...state,
@@ -99,6 +103,18 @@ export const calendarReducer: Reducer<CalendarState, ICalendarAction> = (state =
                         return event;
                     },
                 ),
+            };
+
+        case CalendarTypes.eventDelete:
+
+            const { id } = state.activeEvent as IEvent;
+
+            return {
+                ...state,
+                events: state.events.filter(
+                    (event: IEvent) => (event.id !== id)
+                ),
+                activeEvent: null,
             };
 
         default:

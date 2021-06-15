@@ -1,4 +1,4 @@
-import { ISetActiveEventAction, IClearctiveEventAction, IUpdateEventAction } from './../reducers/calendarReducer';
+import { ISetActiveEventAction, IClearctiveEventAction, IUpdateEventAction, IDeleteEventAction } from './../reducers/calendarReducer';
 import { IAddNewEventAction } from '../reducers/calendarReducer';
 import { CalendarTypes } from '../types/calendar.types';
 import { IEvent } from './../components/calendar/CalendarEvent';
@@ -29,6 +29,13 @@ export const updateEvent = (event: IEvent): IUpdateEventAction => (
         payload: {
             event,
         },
+    }
+);
+
+
+export const deleteEvent = (): IDeleteEventAction => (
+    {
+        type: CalendarTypes.eventDelete,
     }
 );
 

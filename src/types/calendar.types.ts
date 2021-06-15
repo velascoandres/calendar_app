@@ -3,4 +3,5 @@ export enum CalendarTypes {
     eventSetActive = '[Calendar] Set Active Event',
     eventClearActive = '[Calendar] Clear Active Event',
     eventUpdate = '[Calendar] Update Event',
+    eventDelete = '[Calendar] Delete Event',
 }
