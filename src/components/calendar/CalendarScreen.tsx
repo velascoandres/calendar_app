@@ -7,29 +7,18 @@ import { Navbar } from '../ui/Navbar';
 import { MESSAGES_ES } from '../../helpers/calendar-messages-es';
 import { CalendarEvent, IEvent } from './CalendarEvent';
 import { CalendarModal } from './CalendarModal';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { uiOpenModal } from '../../actions/ui';
 import { setActiveEvent } from '../../actions/calendar';
 import { AddNewFab } from '../ui/AddNewFab';
+import { RootState } from '../../store/store';
+import { CalendarState } from '../../reducers/calendarReducer';
 
 
 moment.locale('es');
 
 const localizer = momentLocalizer(moment);
 
-const events = [
-    {
-        title: 'Birthday',
-        start: moment().toDate(),
-        end: moment().add(2, 'hours').toDate(),
-        bgcolor: '#fafafa',
-        notes: 'Comprar el pastel',
-        user: {
-            _id: '123',
-            name: 'Andrés',
-        }
-    },
-];
 
 export const CalendarScreen: React.FC = () => {
 
@@ -37,7 +26,7 @@ export const CalendarScreen: React.FC = () => {
 
     const [lastView, setLastView] = useState<View>(initialState);
     const dispatch = useDispatch();
-
+    const { events } = useSelector<RootState, CalendarState>(state => state.calendar);
 
     const onDoubleClick = (e: IEvent) => {
         dispatch(
@@ -86,7 +75,7 @@ export const CalendarScreen: React.FC = () => {
                 view={lastView}
                 onSelectEvent={onSelectEvent}
             />
-            
+
             <AddNewFab />
 
             <CalendarModal />

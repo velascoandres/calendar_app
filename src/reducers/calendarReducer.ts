@@ -5,7 +5,7 @@ import { CalendarTypes } from '../types/calendar.types';
 
 export type CalendarState = {
     events: IEvent[];
-    activeEvent?: IEvent;
+    activeEvent?: IEvent | null;
 };
 
 export interface ICalendarAction {
@@ -19,11 +19,22 @@ export interface IAddNewEventAction extends ICalendarAction {
     }
 }
 
+export interface IUpdateEventAction extends ICalendarAction {
+    type: CalendarTypes.eventUpdate;
+    payload: {
+        event: IEvent;
+    }
+}
+
 export interface ISetActiveEventAction extends ICalendarAction {
     type: CalendarTypes.eventSetActive;
     payload: {
         event: IEvent;
     }
+}
+
+export interface IClearctiveEventAction extends ICalendarAction {
+    type: CalendarTypes.eventClearActive;
 }
 
 
@@ -67,6 +78,27 @@ export const calendarReducer: Reducer<CalendarState, ICalendarAction> = (state =
             return {
                 ...state,
                 activeEvent,
+            };
+        case CalendarTypes.eventClearActive:
+            return {
+                ...state,
+                activeEvent: null,
+            };
+
+        case CalendarTypes.eventUpdate:
+
+            const { event:updatedEvent } = (action as IUpdateEventAction).payload;
+
+            return {
+                ...state,
+                events: state.events.map(
+                    (event: IEvent) => {
+                        if (event.id === updatedEvent.id) {
+                            return updatedEvent;
+                        }
+                        return event;
+                    },
+                ),
             };
 
         default:

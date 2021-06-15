@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Modal from 'react-modal';
 import moment from 'moment';
@@ -15,8 +15,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UIState } from '../../reducers/uiReducer';
 import { RootState } from '../../store/store';
 import { uiCloseModal } from '../../actions/ui';
-import { eventAddNew } from '../../actions/calendar';
+import { clearActiveEvent, eventAddNew, updateEvent } from '../../actions/calendar';
 import { IEvent } from './CalendarEvent';
+import { CalendarState } from '../../reducers/calendarReducer';
 
 const customStyles: Modal.Styles = {
     content: {
@@ -45,9 +46,17 @@ Modal.setAppElement('#root');
 const now = moment().minutes(0).seconds(0).add(1, 'hours'); // 3:00:50
 const after = now.clone().add(1, 'hours'); // 3:00:50
 
+const initialFormValues: EventForm = {
+    title: 'Evento',
+    notes: '',
+    start: now.toDate(),
+    end: after.toDate(),
+};
+
 export const CalendarModal: React.FC = () => {
 
-    const { modalOpen } = useSelector<RootState, UIState>(state => state.ui) as UIState;
+    const { modalOpen } = useSelector<RootState, UIState>(state => state.ui);
+    const { activeEvent } = useSelector<RootState, CalendarState>(state => state.calendar);
 
     const dispatch = useDispatch();
 
@@ -56,16 +65,22 @@ export const CalendarModal: React.FC = () => {
     const [dateEnd, setDateEnd] = useState<Date>(after.toDate());
     const [titleValid, setTitleValid] = useState<ValueState>(ValueState.clean);
 
-    const initialFormValues: EventForm = {
-        title: 'Evento',
-        notes: '',
-        start: now.toDate(),
-        end: after.toDate(),
-    };
+
 
     const [formValues, setFormValues] = useState<EventForm>(initialFormValues);
 
+
     const { notes, title, start, end } = formValues;
+
+
+    useEffect(() => {
+        if (activeEvent) {
+            setFormValues(activeEvent);
+        }
+    },
+        [activeEvent, setFormValues]
+    );
+
 
     const handleInputChange = ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormValues(
@@ -97,26 +112,42 @@ export const CalendarModal: React.FC = () => {
         setTitleValid(ValueState.valid);
 
 
-        dispatch(
-            eventAddNew(
-                {
-                    ...formValues,
-                    id: new Date().getTime().toString(),
-                    user: {
-                        _id: '123',
-                        name: 'Andres',
-                    }
+        if (activeEvent) {
 
-                }
-            )
-        );
+            dispatch(
+                updateEvent(
+                    {
+                        ...activeEvent,
+                        ...formValues,
+                    },
+                )
+            );
+        } else {
+            dispatch(
+                eventAddNew(
+                    {
+                        ...formValues,
+                        id: new Date().getTime().toString(),
+                        user: {
+                            _id: '123',
+                            name: 'Andres',
+                        }
+
+                    }
+                )
+            );
+        }
+
+
         closeModal();
 
     }
 
 
     const closeModal = () => {
-        dispatch(uiCloseModal())
+        dispatch(uiCloseModal());
+        dispatch(clearActiveEvent());
+        setFormValues(initialFormValues);
     }
 
 
@@ -156,7 +187,11 @@ export const CalendarModal: React.FC = () => {
             overlayClassName="modal-fondo"
         >
 
-            <h1> Nuevo evento </h1>
+            <h1>
+                {
+                    activeEvent ? 'Editar Evento' : 'Nuevo evento'
+                }
+            </h1>
             <hr />
             <form
                 className="container"
@@ -229,7 +264,11 @@ export const CalendarModal: React.FC = () => {
                         className="btn btn-outline-primary"
                     >
                         <i className="far fa-save"></i>
-                        <span> Guardar</span>
+                        <span>
+                            {
+                                activeEvent ? ' Editar' : ' Guardar'
+                            }
+                        </span>
                     </button>
                 </div>
             </form>

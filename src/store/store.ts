@@ -2,6 +2,7 @@ import { UIState } from './../reducers/uiReducer';
 import { rootReducer } from './../reducers/rootReducer';
 import { createStore, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
+import { CalendarState } from '../reducers/calendarReducer';
 
 
 declare global {
@@ -20,4 +21,4 @@ export const store = createStore(
 );
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = {ui: UIState};
+export type RootState = {ui: UIState, calendar: CalendarState};
