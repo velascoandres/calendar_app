@@ -1,4 +1,4 @@
-import { UITypes } from './../types/types';
+import { UITypes } from '../types/ui.types';
 import { Reducer } from "react";
 
 export type UIState = {

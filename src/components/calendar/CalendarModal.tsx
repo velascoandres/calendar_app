@@ -15,6 +15,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UIState } from '../../reducers/uiReducer';
 import { RootState } from '../../store/store';
 import { uiCloseModal } from '../../actions/ui';
+import { eventAddNew } from '../../actions/calendar';
+import { IEvent } from './CalendarEvent';
 
 const customStyles: Modal.Styles = {
     content: {
@@ -28,12 +30,7 @@ const customStyles: Modal.Styles = {
 };
 
 
-export interface IEventForm {
-    title: string;
-    notes: string;
-    startDate: Date;
-    endDate: Date;
-}
+export type EventForm = Omit<IEvent, 'bgcolor' | 'user'>
 
 export enum ValueState {
     clean = 'Clear',
@@ -59,16 +56,16 @@ export const CalendarModal: React.FC = () => {
     const [dateEnd, setDateEnd] = useState<Date>(after.toDate());
     const [titleValid, setTitleValid] = useState<ValueState>(ValueState.clean);
 
-    const initialFormValues: IEventForm = {
+    const initialFormValues: EventForm = {
         title: 'Evento',
         notes: '',
-        startDate: now.toDate(),
-        endDate: after.toDate(),
+        start: now.toDate(),
+        end: after.toDate(),
     };
 
-    const [formValues, setFormValues] = useState<IEventForm>(initialFormValues);
+    const [formValues, setFormValues] = useState<EventForm>(initialFormValues);
 
-    const { notes, title, startDate, endDate } = formValues;
+    const { notes, title, start, end } = formValues;
 
     const handleInputChange = ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormValues(
@@ -82,8 +79,8 @@ export const CalendarModal: React.FC = () => {
 
     const handleSubmitForm = (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const momentStart = moment(startDate);
-        const momentEnd = moment(endDate);
+        const momentStart = moment(start);
+        const momentEnd = moment(end);
 
         if (momentStart.isSameOrAfter(momentEnd)) {
             Swal.fire(
@@ -100,7 +97,19 @@ export const CalendarModal: React.FC = () => {
         setTitleValid(ValueState.valid);
 
 
-        // TODO: realizar grabacion
+        dispatch(
+            eventAddNew(
+                {
+                    ...formValues,
+                    id: new Date().getTime().toString(),
+                    user: {
+                        _id: '123',
+                        name: 'Andres',
+                    }
+
+                }
+            )
+        );
         closeModal();
 
     }
@@ -120,7 +129,7 @@ export const CalendarModal: React.FC = () => {
         setFormValues(
             {
                 ...formValues,
-                startDate: date as Date,
+                start: date as Date,
             }
         );
 
@@ -131,7 +140,7 @@ export const CalendarModal: React.FC = () => {
         setFormValues(
             {
                 ...formValues,
-                endDate: date as Date,
+                end: date as Date,
             }
         );
     };
@@ -188,7 +197,7 @@ export const CalendarModal: React.FC = () => {
                     <label>Titulo* y notas</label>
                     <input
                         type="text"
-                        className={`form-control ${titleValid !== ValueState.valid && 'is-invalid'}`}
+                        className={`form-control ${(titleValid === ValueState.inValid) && 'is-invalid'}`}
                         placeholder="Título del evento"
                         name="title"
                         value={title}

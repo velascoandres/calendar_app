@@ -1,4 +1,4 @@
-import { UITypes } from './../types/types';
+import { UITypes } from '../types/ui.types';
 import { UIAction } from './../reducers/uiReducer';
 
 export const uiOpenModal = (): UIAction => (

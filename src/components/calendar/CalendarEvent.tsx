@@ -3,10 +3,11 @@ import React from 'react'
 
 
 export interface IEvent {
+    id?: string;
     title: string;
     start: Date;
     end: Date;
-    bgcolor: string;
+    bgcolor?: string;
     notes: string;
     user: {
         _id: string;
