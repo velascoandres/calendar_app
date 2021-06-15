@@ -1,8 +1,7 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { useState } from 'react';
 
 import Modal from 'react-modal';
 import moment from 'moment';
-import TextField from '@material-ui/core/TextField';
 
 import {
     MuiPickersUtilsProvider,
@@ -10,6 +9,8 @@ import {
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+
+import Swal from 'sweetalert2';
 
 const customStyles: Modal.Styles = {
     content: {
@@ -21,6 +22,20 @@ const customStyles: Modal.Styles = {
         transform: 'translate(-50%, -50%)'
     }
 };
+
+
+export interface IEventForm {
+    title: string;
+    notes: string;
+    startDate: Date;
+    endDate: Date;
+}
+
+export enum ValueState {
+    clean = 'Clear',
+    valid = 'Dirty',
+    inValid = 'Invalid',
+}
 
 
 
@@ -36,6 +51,58 @@ export const CalendarModal: React.FC = () => {
 
     const [dateStart, setDateStart] = useState<Date>(now.toDate());
     const [dateEnd, setDateEnd] = useState<Date>(after.toDate());
+    const [titleValid, setTitleValid] = useState<ValueState>(ValueState.clean);
+
+    const initialFormValues: IEventForm = {
+        title: 'Evento',
+        notes: '',
+        startDate: now.toDate(),
+        endDate: after.toDate(),
+    };
+
+    const [formValues, setFormValues] = useState<IEventForm>(initialFormValues);
+
+    const { notes, title, startDate, endDate } = formValues;
+
+    const handleInputChange = ({ target }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormValues(
+            {
+                ...formValues,
+                [target.name]: target.value,
+            }
+        );
+    };
+
+
+    const handleSubmitForm = (e: React.ChangeEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const momentStart = moment(startDate);
+        const momentEnd = moment(endDate);
+
+        if (momentStart.isSameOrAfter(momentEnd)) {
+            Swal.fire(
+                'Error',
+                'La fecha fin debe de ser mayor a la fecha de inicio',
+                'error',
+            );
+            return;
+        }
+
+        if (title.trim().length < 2) {
+            return setTitleValid(ValueState.inValid);
+        }
+        setTitleValid(ValueState.valid);
+
+
+        // TODO: realizar grabacion
+        closeModal();
+
+    }
+
+
+    const closeModal = () => {
+        // TODO: cerrar modal
+    }
 
 
     const onRequestClose = () => {
@@ -44,10 +111,23 @@ export const CalendarModal: React.FC = () => {
 
     const handleStartDateChange = (date: MaterialUiPickersDate) => {
         setDateStart(date as Date);
+        setFormValues(
+            {
+                ...formValues,
+                startDate: date as Date,
+            }
+        );
+
     };
 
     const handleEndDateChange = (date: MaterialUiPickersDate) => {
         setDateEnd(date as Date);
+        setFormValues(
+            {
+                ...formValues,
+                endDate: date as Date,
+            }
+        );
     };
 
     return (
@@ -63,10 +143,13 @@ export const CalendarModal: React.FC = () => {
 
             <h1> Nuevo evento </h1>
             <hr />
-            <form className="c">
+            <form
+                className="container"
+                onSubmit={handleSubmitForm}
+            >
 
                 <div className="mb-3">
-                    <label>Fecha y hora inicio</label>
+                    <label>Fecha y hora inicio*</label>
                     <br />
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <DateTimePicker
@@ -81,7 +164,7 @@ export const CalendarModal: React.FC = () => {
                 </div>
 
                 <div className="mb-3">
-                    <label>Fecha y hora fin</label>
+                    <label>Fecha y hora fin*</label>
                     <br />
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <DateTimePicker
@@ -96,13 +179,15 @@ export const CalendarModal: React.FC = () => {
 
                 <hr />
                 <div className="mb-3">
-                    <label>Titulo y notas</label>
+                    <label>Titulo* y notas</label>
                     <input
                         type="text"
-                        className="form-control"
+                        className={`form-control ${titleValid !== ValueState.valid && 'is-invalid'}`}
                         placeholder="Título del evento"
                         name="title"
+                        value={title}
                         autoComplete="off"
+                        onChange={handleInputChange}
                     />
                     <small id="emailHelp" className="form-text text-muted">
                         Una descripción corta
@@ -115,20 +200,23 @@ export const CalendarModal: React.FC = () => {
                         placeholder="Notas"
                         rows={5}
                         name="notes"
+                        value={notes}
+                        onChange={handleInputChange}
                     ></textarea>
                     <small id="emailHelp" className="form-text text-muted">
                         Información adicional
                     </small>
                 </div>
 
-                <button
-                    type="submit"
-                    className="btn btn-outline-primary btn-block"
-                >
-                    <i className="far fa-save"></i>
-                    <span> Guardar</span>
-                </button>
-
+                <div className="d-grid gap-2">
+                    <button
+                        type="submit"
+                        className="btn btn-outline-primary"
+                    >
+                        <i className="far fa-save"></i>
+                        <span> Guardar</span>
+                    </button>
+                </div>
             </form>
         </Modal>
     );
