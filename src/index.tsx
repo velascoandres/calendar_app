@@ -6,9 +6,10 @@ import './styles.css';
 
 
 ReactDOM.render(
-  <React.StrictMode>
-    <CalendarApp />
-  </React.StrictMode>,
+  // <React.StrictMode>
+  //   <CalendarApp />
+  // </React.StrictMode>,
+  <CalendarApp />,
   document.getElementById('root')
 );
 

@@ -7,6 +7,8 @@ import { Navbar } from '../ui/Navbar';
 import { MESSAGES_ES } from '../../helpers/calendar-messages-es';
 import { CalendarEvent, IEvent } from './CalendarEvent';
 import { CalendarModal } from './CalendarModal';
+import { useDispatch } from 'react-redux';
+import { uiOpenModal } from '../../actions/ui';
 
 
 moment.locale('es');
@@ -32,10 +34,14 @@ export const CalendarScreen: React.FC = () => {
     const initialState = (localStorage.getItem('lastView') || 'month') as View;
 
     const [lastView, setLastView] = useState<View>(initialState);
+    const dispatch = useDispatch();
 
 
     const onDoubleClick = (e: IEvent) => {
         console.log(e);
+        dispatch(
+            uiOpenModal(),
+        );
     };
 
     const onSelectEvent = (e: IEvent) => {

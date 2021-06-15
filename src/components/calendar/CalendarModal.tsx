@@ -11,6 +11,10 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 
 import Swal from 'sweetalert2';
+import { useDispatch, useSelector } from 'react-redux';
+import { UIState } from '../../reducers/uiReducer';
+import { RootState } from '../../store/store';
+import { uiCloseModal } from '../../actions/ui';
 
 const customStyles: Modal.Styles = {
     content: {
@@ -46,8 +50,10 @@ const after = now.clone().add(1, 'hours'); // 3:00:50
 
 export const CalendarModal: React.FC = () => {
 
+    const { modalOpen } = useSelector<RootState, UIState>(state => state.ui) as UIState;
 
-    const [isOpen, setIsOpen] = useState<boolean>(true);
+    const dispatch = useDispatch();
+
 
     const [dateStart, setDateStart] = useState<Date>(now.toDate());
     const [dateEnd, setDateEnd] = useState<Date>(after.toDate());
@@ -101,12 +107,12 @@ export const CalendarModal: React.FC = () => {
 
 
     const closeModal = () => {
-        // TODO: cerrar modal
+        dispatch(uiCloseModal())
     }
 
 
     const onRequestClose = () => {
-        setIsOpen(false);
+        closeModal();
     };
 
     const handleStartDateChange = (date: MaterialUiPickersDate) => {
@@ -132,7 +138,7 @@ export const CalendarModal: React.FC = () => {
 
     return (
         <Modal
-            isOpen={isOpen}
+            isOpen={modalOpen}
             onRequestClose={onRequestClose}
             style={customStyles}
             closeTimeoutMS={200}
