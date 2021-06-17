@@ -1,3 +1,4 @@
+import { AuthState } from './../reducers/authReducer';
 import { UIState } from './../reducers/uiReducer';
 import { rootReducer } from './../reducers/rootReducer';
 import { createStore, compose, applyMiddleware } from 'redux';
@@ -21,4 +22,4 @@ export const store = createStore(
 );
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = {ui: UIState, calendar: CalendarState};
+export type RootState = {ui: UIState, calendar: CalendarState, auth: AuthState};
