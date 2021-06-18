@@ -6,7 +6,7 @@ import { AuthTypes } from './../types/auth.types';
 import { IUser } from './../interfaces/user.interface';
 import { AuthService } from '../services/authService';
 import { ILoginAction, IRegisterAction } from '../reducers/authReducer';
-import { IFinishChecking } from './../reducers/authReducer';
+import { IFinishChecking, ILogoutAction } from './../reducers/authReducer';
 
 export const startLogin = (email: string, password: string) => {
 
@@ -56,6 +56,15 @@ export const startChecking = () => {
 };
 
 
+
+export const startLogout = () => {
+    return async (dispatch: Dispatch<any>) => {
+        AuthService.instance.logout();
+        dispatch(logout());
+    };
+}
+
+
 export const login = (user: IUser): ILoginAction => ({
     type: AuthTypes.login,
     payload: user,
@@ -71,5 +80,10 @@ export const register = (user: IUser): IRegisterAction => ({
 
 export const finishChecking = (): IFinishChecking => ({
     type: AuthTypes.authCheckingFinish,
+});
+
+
+export const logout = (): ILogoutAction => ({
+    type: AuthTypes.logout,
 });
 

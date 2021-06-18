@@ -20,6 +20,10 @@ export interface ILoginAction extends IAuthAction {
     payload: IUser;
 }
 
+export interface ILogoutAction extends IAuthAction {
+    type: AuthTypes.logout;
+}
+
 export interface IRegisterAction extends IAuthAction {
     type: AuthTypes.startRegister;
     payload: IUser;
@@ -71,6 +75,12 @@ export const authReducer: Reducer<AuthState, IAuthAction> = (state = initialStat
                 ...state,
                 uid: user.uid,
                 name: user.name,
+                checking: false,
+            };
+
+        case AuthTypes.logout:
+            return {
+                ...initialState,
                 checking: false,
             };
 

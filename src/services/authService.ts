@@ -87,6 +87,12 @@ export class AuthService {
     }
 
 
+    logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('token-init-date');
+    }
+
+
     private handleLocalStorage(user: IUser): void {
         const token = user.token;
         localStorage.setItem('token', token);

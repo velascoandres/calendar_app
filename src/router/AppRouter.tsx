@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
+
 import { useDispatch, useSelector } from 'react-redux';
 import {
     BrowserRouter as Router,
     Switch,
-    Route,
-} from "react-router-dom";
+} from 'react-router-dom';
+
 import { startChecking } from '../actions/auth';
 import { LoginScreen } from '../components/auth/LoginScreen';
 import { CalendarScreen } from '../components/calendar/CalendarScreen';
@@ -12,6 +13,7 @@ import { AuthState } from '../reducers/authReducer';
 import { RootState } from '../store/store';
 import { PrivateRoute } from './PrivateRoute';
 import { PublicRoute } from './PublicRoute';
+
 
 export const AppRouter: React.FC = () => {
 
