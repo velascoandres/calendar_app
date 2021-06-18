@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UIState } from '../../reducers/uiReducer';
 import { RootState } from '../../store/store';
 import { uiCloseModal } from '../../actions/ui';
-import { clearActiveEvent, eventAddNew, updateEvent } from '../../actions/calendar';
+import { clearActiveEvent, eventStartAddNew, updateEvent } from '../../actions/calendar';
 import { IEvent } from './CalendarEvent';
 import { CalendarState } from '../../reducers/calendarReducer';
 
@@ -55,6 +55,8 @@ const initialFormValues: EventForm = {
 
 export const CalendarModal: React.FC = () => {
 
+    const [formValues, setFormValues] = useState<EventForm>(initialFormValues);
+
     const { modalOpen } = useSelector<RootState, UIState>(state => state.ui);
     const { activeEvent } = useSelector<RootState, CalendarState>(state => state.calendar);
 
@@ -67,7 +69,6 @@ export const CalendarModal: React.FC = () => {
 
 
 
-    const [formValues, setFormValues] = useState<EventForm>(initialFormValues);
 
 
     const { notes, title, start, end } = formValues;
@@ -77,6 +78,8 @@ export const CalendarModal: React.FC = () => {
 
         if (activeEvent) {
             setFormValues(activeEvent);
+            setDateStart(activeEvent.start);
+            setDateEnd(activeEvent.end);
         } else {
             setFormValues(initialFormValues);
         }
@@ -127,15 +130,9 @@ export const CalendarModal: React.FC = () => {
             );
         } else {
             dispatch(
-                eventAddNew(
+                eventStartAddNew(
                     {
                         ...formValues,
-                        id: new Date().getTime().toString(),
-                        user: {
-                            _id: '123',
-                            name: 'Andres',
-                        }
-
                     }
                 )
             );

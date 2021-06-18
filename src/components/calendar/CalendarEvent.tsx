@@ -1,4 +1,5 @@
 import React from 'react'
+import { IUser } from '../../interfaces/user.interface';
 
 
 
@@ -9,10 +10,7 @@ export interface IEvent {
     end: Date;
     bgcolor?: string;
     notes: string;
-    user: {
-        _id: string;
-        name: string;
-    }
+    user?: Omit<IUser, 'token' | 'email' | 'password' >;
 }
 
 export type EventProps = {
@@ -23,12 +21,11 @@ export type EventProps = {
 export const CalendarEvent: React.FC<EventProps> = ({ event }: EventProps) => {
 
     const { title, user } = event;
-    const { name } = user;
 
     return (
         <div>
             <span> {title} </span>
-            <span> - {name} </span>
+            <span> {user?.name} </span>
         </div>
     );
 }

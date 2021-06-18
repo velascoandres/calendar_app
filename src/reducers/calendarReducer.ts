@@ -51,7 +51,7 @@ export const initialState: CalendarState = {
             bgcolor: '#fafafa',
             notes: 'Comprar el pastel',
             user: {
-                _id: '123',
+                uid: '123',
                 name: 'Andrés',
             }
         },
