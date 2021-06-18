@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     BrowserRouter as Router,
     Switch,
@@ -8,16 +8,30 @@ import {
 import { startChecking } from '../actions/auth';
 import { LoginScreen } from '../components/auth/LoginScreen';
 import { CalendarScreen } from '../components/calendar/CalendarScreen';
+import { AuthState } from '../reducers/authReducer';
+import { RootState } from '../store/store';
+import { PrivateRoute } from './PrivateRoute';
+import { PublicRoute } from './PublicRoute';
 
 export const AppRouter: React.FC = () => {
 
     const dispatch = useDispatch();
+
+    const { checking, uid } = useSelector<RootState, AuthState>(state => state.auth);
+
+    const isAuthenticated = !!uid;
 
     useEffect(() => {
 
         dispatch(startChecking());
 
     }, [dispatch])
+
+    if (checking) {
+        return (
+            <h5> Wait...</h5>
+        );
+    }
 
     return (
         <div>
@@ -26,13 +40,19 @@ export const AppRouter: React.FC = () => {
 
                 <Switch>
 
-                    <Route path="/login" exact>
-                        <LoginScreen />
-                    </Route>
+                    <PublicRoute
+                        exact
+                        isAuthenticated={isAuthenticated}
+                        path="/login"
+                        component={LoginScreen}
+                    />
 
-                    <Route path="/" exact>
-                        <CalendarScreen />
-                    </Route>
+                    <PrivateRoute 
+                        exact
+                        isAuthenticated={isAuthenticated}
+                        path="/"
+                        component={CalendarScreen}
+                    />
 
                 </Switch>
 
