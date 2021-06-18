@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { IUser } from '../interfaces/user.interface';
+
+import { IUser } from './../interfaces/user.interface';
 import { HttpMethods } from './httpMethods';
 
 
@@ -9,12 +10,10 @@ export class AuthService {
 
     private static _instance: AuthService;
     private url: string;
-    private _user: IUser | null;
 
 
     protected constructor() {
         this.url = `${baseUrl}/auth`;
-        this._user = JSON.parse(localStorage.getItem('user') || 'null');
     }
 
     public static get instance() {
@@ -24,12 +23,6 @@ export class AuthService {
         this._instance = new AuthService();
         return this._instance;
     }
-
-    public get user(): IUser | null {
-        return this._user;
-    }
-
-
 
     async login(email: string, password: string): Promise<IUser> {
 
@@ -47,17 +40,14 @@ export class AuthService {
             }
         );
 
-        this._user = response.data;
-        
-        localStorage.setItem('user', JSON.stringify(this._user));
-        localStorage.setItem('token-init-date', new Date().getTime().toString());
-
-        return this._user as IUser;
+        const user = (response.data as IUser);
+        this.handleLocalStorage(user);
+        return user;
 
     }
 
 
-    async register(email: string, password: string): Promise<IUser> {
+    async register(name: string, email: string, password: string): Promise<IUser> {
 
         const response = await axios(
             `${this.url}/new`,
@@ -66,6 +56,7 @@ export class AuthService {
                     'Content-Type': 'application/json',
                 },
                 data: {
+                    name,
                     email,
                     password,
                 },
@@ -73,13 +64,34 @@ export class AuthService {
             }
         );
 
-        this._user = response.data;
-        localStorage.setItem('user', JSON.stringify(this._user));
-        localStorage.setItem('token-init-date', new Date().getTime().toString());
+        const user = (response.data as IUser);
+        this.handleLocalStorage(user);
         return response.data;
-
     }
 
+
+    async renewToken() {
+        const token = localStorage.getItem('token') || '';
+        const response = await axios(
+            `${this.url}/renew`,
+            {
+                headers: {
+                    'x-token': token,
+                },
+                method: HttpMethods.get,
+            }
+        );
+        const user = response.data;
+        this.handleLocalStorage(user);
+        return user;
+    }
+
+
+    private handleLocalStorage(user: IUser): void {
+        const token = user.token;
+        localStorage.setItem('token', token);
+        localStorage.setItem('token-init-date', new Date().getTime().toString());
+    }
 
 
 }

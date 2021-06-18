@@ -1,6 +1,8 @@
-import { IUser } from './../interfaces/user.interface';
 import { Reducer } from 'react';
+
+import { IUser } from './../interfaces/user.interface';
 import { AuthTypes } from '../types/auth.types';
+
 
 export type AuthState = {
     uid: string | null;
@@ -16,6 +18,16 @@ export interface IAuthAction {
 export interface ILoginAction extends IAuthAction {
     type: AuthTypes.login;
     payload: IUser;
+}
+
+export interface IRegisterAction extends IAuthAction {
+    type: AuthTypes.startRegister;
+    payload: IUser;
+}
+
+
+export interface IFinishChecking extends IAuthAction {
+    type: AuthTypes.authCheckingFinish;
 }
 
 
@@ -35,6 +47,23 @@ export const authReducer: Reducer<AuthState, IAuthAction> = (state = initialStat
 
 
     switch (type) {
+
+
+        case AuthTypes.authCheckingFinish:
+            return {
+                ...state,
+                checking: false,
+            };
+
+        case AuthTypes.startRegister:
+            const { payload: createdUser } = action as IRegisterAction;
+            return {
+                ...state,
+                checking: false,
+                uid: createdUser.uid,
+                name: createdUser.name,
+            };
+
 
         case AuthTypes.login:
             const { payload: user } = action as ILoginAction;

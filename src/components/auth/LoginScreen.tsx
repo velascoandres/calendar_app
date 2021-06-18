@@ -1,11 +1,16 @@
 import React from 'react';
+
 import { useDispatch } from 'react-redux';
-import { startLogin } from '../../actions/auth';
+import Swal from 'sweetalert2';
+
+import { startLogin, startRegister } from '../../actions/auth';
 import { useForm } from '../../hooks/userForm';
 import './login.css';
 
+
 export type LoginForm = { email: string; password: string };
 export type RegisterForm = { email: string; password: string; repassword: string; name: string };
+
 
 
 export const LoginScreen: React.FC = () => {
@@ -35,15 +40,20 @@ export const LoginScreen: React.FC = () => {
 
         e.preventDefault();
 
-        console.log(lEmail, lPassword);
-
         dispatch(startLogin(lEmail, lPassword));
 
     };
 
 
     const handleRegister = (e: React.ChangeEvent<HTMLFormElement>) => {
+
         e.preventDefault();
+
+        if (rPassword !== repassword) {
+            return Swal.fire('Error', 'The passwords must be equal', 'error');
+        }
+        dispatch(startRegister(formRegisterValues));
+
     };
 
 
