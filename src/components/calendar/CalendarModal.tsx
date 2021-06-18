@@ -74,6 +74,7 @@ export const CalendarModal: React.FC = () => {
 
 
     useEffect(() => {
+
         if (activeEvent) {
             setFormValues(activeEvent);
         } else {

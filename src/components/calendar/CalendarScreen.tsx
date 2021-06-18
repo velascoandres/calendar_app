@@ -8,12 +8,12 @@ import { MESSAGES_ES } from '../../helpers/calendar-messages-es';
 import { CalendarEvent, IEvent } from './CalendarEvent';
 import { CalendarModal } from './CalendarModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { uiOpenModal } from '../../actions/ui';
 import { clearActiveEvent, setActiveEvent } from '../../actions/calendar';
 import { AddNewFab } from '../ui/AddNewFab';
 import { RootState } from '../../store/store';
 import { CalendarState } from '../../reducers/calendarReducer';
 import { DeleteEventFab } from '../ui/DeleteEventFab';
+import { UpdateFab } from '../ui/UpdateFab';
 
 
 moment.locale('es');
@@ -23,20 +23,20 @@ const localizer = momentLocalizer(moment);
 
 export const CalendarScreen: React.FC = () => {
 
+    const dispatch = useDispatch();
     const initialState = (localStorage.getItem('lastView') || 'month') as View;
 
     const [lastView, setLastView] = useState<View>(initialState);
-    const dispatch = useDispatch();
     const { events, activeEvent } = useSelector<RootState, CalendarState>(state => state.calendar);
 
-    const onDoubleClick = (e: IEvent) => {
-        dispatch(
-            uiOpenModal(),
-        );
-    };
+    // const onDoubleClick = (e: IEvent) => {
+    //     console.log('Me abrire');
+    //     dispatch(uiOpenModal());
+    // };
 
     const onSelectEvent = (event: IEvent) => {
-        dispatch(setActiveEvent(event))
+        console.log('selecciono')
+        dispatch(setActiveEvent(event));
     };
 
     const onViewChange = (view: View) => {
@@ -60,8 +60,6 @@ export const CalendarScreen: React.FC = () => {
     };
 
     const handleSelectSlot = (event: SlotInfo) => {
-        // TODO: Crear desde la fecha del slot
-        console.log(event);
         dispatch(clearActiveEvent());
     };
 
@@ -77,17 +75,26 @@ export const CalendarScreen: React.FC = () => {
                 endAccessor="end"
                 messages={MESSAGES_ES}
                 eventPropGetter={eventStyleGetter}
-                components={{ event: CalendarEvent }}
-                onDoubleClickEvent={onDoubleClick}
+                // onDoubleClickEvent={onDoubleClick}
+                onSelectEvent={onSelectEvent}
                 onView={onViewChange}
                 view={lastView}
                 selectable={true}
                 onSelectSlot={handleSelectSlot}
-                onSelectEvent={onSelectEvent}
+                components={{ event: CalendarEvent }}
             />
 
 
-            <AddNewFab />
+           
+
+            {
+                (!activeEvent) &&  <AddNewFab />
+            }
+
+
+            {
+                (activeEvent) && <UpdateFab />
+            }
 
             {
                 (activeEvent) && <DeleteEventFab />

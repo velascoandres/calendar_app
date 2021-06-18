@@ -72,3 +72,13 @@ html, body {
     position: fixed;
     left: 25px;
 }
+
+
+.fab-secondary{
+    border-radius: 100%;
+    bottom: 25px;
+    font-size: 30px;
+    padding: 25px;
+    position: fixed;
+    right: 25px;
+}

@@ -83,6 +83,7 @@ export const calendarReducer: Reducer<CalendarState, ICalendarAction> = (state =
                 ...state,
                 activeEvent,
             };
+
         case CalendarTypes.eventClearActive:
             return {
                 ...state,
@@ -118,8 +119,6 @@ export const calendarReducer: Reducer<CalendarState, ICalendarAction> = (state =
             };
 
         default:
-            return {
-                ...state,
-            };
+            return state;
     }
 };
