@@ -1,6 +1,5 @@
 import { IEvent } from './../components/calendar/CalendarEvent';
 import { Reducer } from 'react';
-import moment from 'moment';
 import { CalendarTypes } from '../types/calendar.types';
 
 export type CalendarState = {
@@ -37,25 +36,21 @@ export interface ISetActiveEventAction extends ICalendarAction {
     }
 }
 
+export interface IEventsLoadedAction extends ICalendarAction {
+    type: CalendarTypes.eventLoaded;
+    payload: {
+        events: IEvent[];
+    }
+}
+
 export interface IClearctiveEventAction extends ICalendarAction {
     type: CalendarTypes.eventClearActive;
 }
 
 
 export const initialState: CalendarState = {
-    events: [
-        {
-            title: 'Birthday',
-            start: moment().toDate(),
-            end: moment().add(2, 'hours').toDate(),
-            bgcolor: '#fafafa',
-            notes: 'Comprar el pastel',
-            user: {
-                uid: '123',
-                name: 'Andrés',
-            }
-        },
-    ],
+    events: [],
+    activeEvent: null,
 };
 
 
@@ -116,6 +111,15 @@ export const calendarReducer: Reducer<CalendarState, ICalendarAction> = (state =
                     (event: IEvent) => (event.id !== id)
                 ),
                 activeEvent: null,
+            };
+
+        case CalendarTypes.eventLoaded:
+            const { events } = (action as IEventsLoadedAction).payload;
+            return {
+                ...state,
+                events: [
+                    ...events
+                ],
             };
 
         default:

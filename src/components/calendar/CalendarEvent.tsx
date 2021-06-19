@@ -1,5 +1,4 @@
 import React from 'react'
-import { IUser } from '../../interfaces/user.interface';
 
 
 
@@ -10,7 +9,7 @@ export interface IEvent {
     end: Date;
     bgcolor?: string;
     notes: string;
-    user?: Omit<IUser, 'token' | 'email' | 'password' >;
+    user?: { _id?: string; name: string };
 }
 
 export type EventProps = {

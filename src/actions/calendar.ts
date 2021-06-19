@@ -1,14 +1,18 @@
+import {
+    ISetActiveEventAction,
+    IClearctiveEventAction,
+    IUpdateEventAction,
+    IDeleteEventAction,
+    IEventsLoadedAction
+} from './../reducers/calendarReducer';
 import Swal from 'sweetalert2';
 import { Dispatch } from 'redux';
-
 import { EventRestService } from './../services/eventRestService';
-import { ISetActiveEventAction, IClearctiveEventAction, IUpdateEventAction, IDeleteEventAction } from './../reducers/calendarReducer';
 import { IAddNewEventAction } from '../reducers/calendarReducer';
 import { CalendarTypes } from '../types/calendar.types';
 import { IEvent } from './../components/calendar/CalendarEvent';
 import { RootState } from '../store/store';
-
-
+import { prepareEvents } from '../helpers/prepareEvents';
 
 
 
@@ -19,7 +23,7 @@ export const eventStartAddNew = (event: IEvent) => {
             const createdEvent = await EventRestService.instance.createEvent(event);
             const { uid, name } = getState().auth;
             createdEvent.user = {
-                uid: uid as string,
+                _id: uid as string,
                 name: name as string,
             };
             createdEvent.start = event.start;
@@ -30,13 +34,24 @@ export const eventStartAddNew = (event: IEvent) => {
             console.error(error);
             Swal.fire('Error', 'Error on create event', 'error');
         }
-
-
     }
 }
 
 
 
+export const eventStartLoading = () => {
+    return async (dispatch: Dispatch) => {
+
+        try {
+            const response = await EventRestService.instance.getEvents();
+            const formatedEvents = prepareEvents(response.data);
+            dispatch(eventsLoad(formatedEvents));
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Error on list events', 'error');
+        }
+    }
+}
 
 
 
@@ -82,5 +97,15 @@ export const deleteEvent = (): IDeleteEventAction => (
 export const clearActiveEvent = (): IClearctiveEventAction => (
     {
         type: CalendarTypes.eventClearActive,
+    }
+);
+
+
+const eventsLoad = (events: IEvent[]): IEventsLoadedAction => (
+    {
+        type: CalendarTypes.eventLoaded,
+        payload: {
+            events,
+        },
     }
 );

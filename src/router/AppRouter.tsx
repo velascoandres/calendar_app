@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     BrowserRouter as Router,
+    Redirect,
     Switch,
 } from 'react-router-dom';
 
@@ -24,6 +25,8 @@ export const AppRouter: React.FC = () => {
     const isAuthenticated = !!uid;
 
     useEffect(() => {
+
+        console.log('checking');
 
         dispatch(startChecking());
 
@@ -56,6 +59,7 @@ export const AppRouter: React.FC = () => {
                         component={CalendarScreen}
                     />
 
+                    <Redirect to="/" />   
                 </Switch>
 
             </Router>
