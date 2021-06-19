@@ -11,6 +11,10 @@ export interface ICalendarAction {
     type: CalendarTypes;
 }
 
+export interface IEventLogoutAction {
+    type: CalendarTypes.eventLogout;
+}
+
 export interface IAddNewEventAction extends ICalendarAction {
     type: CalendarTypes.eventAddNew;
     payload: {
@@ -120,6 +124,11 @@ export const calendarReducer: Reducer<CalendarState, ICalendarAction> = (state =
                 events: [
                     ...events
                 ],
+            };
+
+        case CalendarTypes.eventLogout:
+            return {
+                ...initialState,
             };
 
         default:

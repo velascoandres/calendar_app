@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UIState } from '../../reducers/uiReducer';
 import { RootState } from '../../store/store';
 import { uiCloseModal } from '../../actions/ui';
-import { clearActiveEvent, eventStartAddNew, updateEvent } from '../../actions/calendar';
+import { clearActiveEvent, eventStartAddNew, eventStartUpdate } from '../../actions/calendar';
 import { IEvent } from './CalendarEvent';
 import { CalendarState } from '../../reducers/calendarReducer';
 
@@ -121,7 +121,7 @@ export const CalendarModal: React.FC = () => {
         if (activeEvent) {
 
             dispatch(
-                updateEvent(
+                eventStartUpdate(
                     {
                         ...activeEvent,
                         ...formValues,

@@ -78,6 +78,7 @@ export const CalendarScreen: React.FC = () => {
     };
 
 
+    const canManageEvent = activeEvent?.user?._id === uid;
 
     return (
         <div className="calendar-screen">
@@ -109,11 +110,11 @@ export const CalendarScreen: React.FC = () => {
 
 
             {
-                (activeEvent) && <UpdateFab />
+                (canManageEvent) && <UpdateFab />
             }
 
             {
-                (activeEvent) && <DeleteEventFab />
+                (canManageEvent) && <DeleteEventFab />
             }
 
 

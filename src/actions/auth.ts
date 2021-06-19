@@ -1,3 +1,4 @@
+import { eventLogout } from './calendar';
 import { Dispatch } from 'redux';
 import Swal from 'sweetalert2';
 
@@ -60,6 +61,7 @@ export const startChecking = () => {
 export const startLogout = () => {
     return async (dispatch: Dispatch<any>) => {
         AuthService.instance.logout();
+        dispatch(eventLogout());
         dispatch(logout());
     };
 }

@@ -3,7 +3,8 @@ import {
     IClearctiveEventAction,
     IUpdateEventAction,
     IDeleteEventAction,
-    IEventsLoadedAction
+    IEventsLoadedAction,
+    IEventLogoutAction
 } from './../reducers/calendarReducer';
 import Swal from 'sweetalert2';
 import { Dispatch } from 'redux';
@@ -38,6 +39,44 @@ export const eventStartAddNew = (event: IEvent) => {
 }
 
 
+export const eventStartUpdate = (event: IEvent) => {
+    return async (dispatch: Dispatch, getState: () => RootState) => {
+
+        try {
+            const createdEvent = await EventRestService.instance.updateEvent(event.id as string, event);
+            const { uid, name } = getState().auth;
+            createdEvent.user = {
+                _id: uid as string,
+                name: name as string,
+            };
+            createdEvent.start = event.start;
+            createdEvent.end = event.end;
+            dispatch(updateEvent(createdEvent));
+            Swal.fire('Info', `Event Updated: ${createdEvent.title}`, 'success');
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Error on update event', 'error');
+        }
+    }
+}
+
+
+export const eventStartDelete = () => {
+    return async (dispatch: Dispatch, getState: () => RootState) => {
+
+        try {
+            const { id, title } = getState().calendar.activeEvent as IEvent;
+            await EventRestService.instance.deleteEvent(id as string);
+            dispatch(deleteEvent());
+            Swal.fire('Info', `Event Deleted: ${title}`, 'success');
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Error on update event', 'error');
+        }
+    }
+}
+
+
 
 export const eventStartLoading = () => {
     return async (dispatch: Dispatch) => {
@@ -66,6 +105,22 @@ const eventAddNew = (event: IEvent): IAddNewEventAction => (
     }
 );
 
+const updateEvent = (event: IEvent): IUpdateEventAction => (
+    {
+        type: CalendarTypes.eventUpdate,
+        payload: {
+            event,
+        },
+    }
+);
+
+
+const deleteEvent = (): IDeleteEventAction => (
+    {
+        type: CalendarTypes.eventDelete,
+    }
+);
+
 
 export const setActiveEvent = (event: IEvent): ISetActiveEventAction => (
     {
@@ -77,21 +132,6 @@ export const setActiveEvent = (event: IEvent): ISetActiveEventAction => (
 );
 
 
-export const updateEvent = (event: IEvent): IUpdateEventAction => (
-    {
-        type: CalendarTypes.eventUpdate,
-        payload: {
-            event,
-        },
-    }
-);
-
-
-export const deleteEvent = (): IDeleteEventAction => (
-    {
-        type: CalendarTypes.eventDelete,
-    }
-);
 
 
 export const clearActiveEvent = (): IClearctiveEventAction => (
@@ -99,6 +139,14 @@ export const clearActiveEvent = (): IClearctiveEventAction => (
         type: CalendarTypes.eventClearActive,
     }
 );
+
+
+export const eventLogout = (): IEventLogoutAction => (
+    {
+        type: CalendarTypes.eventLogout,
+    }
+);
+
 
 
 const eventsLoad = (events: IEvent[]): IEventsLoadedAction => (
@@ -109,3 +157,5 @@ const eventsLoad = (events: IEvent[]): IEventsLoadedAction => (
         },
     }
 );
+
+
