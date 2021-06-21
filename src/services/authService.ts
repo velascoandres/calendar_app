@@ -47,7 +47,7 @@ export class AuthService {
     }
 
 
-    async register(name: string, email: string, password: string): Promise<IUser> {
+    async register(name: string, email: string, password: string): Promise<Omit<IUser, 'password'>> {
 
         const response = await axios(
             `${this.url}/new`,
@@ -64,7 +64,7 @@ export class AuthService {
             }
         );
 
-        const user = (response.data as IUser);
+        const user = (response.data as Omit<IUser, 'password'>);
         this.handleLocalStorage(user);
         return response.data;
     }
